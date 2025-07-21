@@ -41,6 +41,7 @@ dependencies:
   sqflite: ^2.3.0
   path: ^1.8.3
   intl: ^0.20.2
+  path_provider: ^2.1.1
 
 dev_dependencies:
   flutter_test:
@@ -60,7 +61,7 @@ dev_dependencies:
   intl: ^0.20.2
   cupertino_icons: ^1.0.2
   flutter_launcher_icons: ^0.14.4
-
+  path_provider: ^2.1.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 flutter_launcher_icons:
@@ -71,6 +72,8 @@ flutter_launcher_icons:
   adaptive_icon_foreground: "C:/Users/angel/Documents/Notas/notas/assets/icon/icon.png"
 # The following section is specific to Flutter packages.
 flutter:
+  assets:
+      - assets/images/logo.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

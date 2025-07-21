@@ -5,11 +5,23 @@ import 'package:printing/printing.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 import '../models/nota.dart';
 
 class PDFService {
   static Future<void> generateAndSharePDF(Nota nota) async {
     final pdf = pw.Document();
+
+    // Cargar el logo desde assets
+    pw.ImageProvider? logoImage;
+    try {
+      final ByteData logoData = await rootBundle.load('assets/images/logo.png');
+      final Uint8List logoBytes = logoData.buffer.asUint8List();
+      logoImage = pw.MemoryImage(logoBytes);
+    } catch (e) {
+      print('Error cargando logo: $e');
+      // Si no se puede cargar el logo, continuamos sin él
+    }
 
     pdf.addPage(
       pw.Page(
@@ -18,24 +30,33 @@ class PDFService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // Encabezado
+              // Encabezado con logo
               pw.Container(
                 width: double.infinity,
                 padding: pw.EdgeInsets.all(20),
                 decoration: pw.BoxDecoration(
-                  color: PdfColors.blue50,
-                  border: pw.Border.all(color: PdfColors.blue200),
+                  color: PdfColors.pink50,
+                  border: pw.Border.all(color: PdfColors.pink200),
                 ),
                 child: pw.Column(
                   children: [
-                    pw.Icon(pw.IconData(0xe0af), size: 48, color: PdfColors.blue700),
+                    // Logo o icono de respaldo
+                    if (logoImage != null)
+                      pw.Container(
+                        width: 80,
+                        height: 80,
+                        child: pw.Image(logoImage),
+                      )
+                    else
+                      pw.Icon(pw.IconData(0xe0af), size: 48, color: PdfColors.pink700),
+                    
                     pw.SizedBox(height: 8),
                     pw.Text(
-                      'SASTRERÍA PROFESIONAL',
+                      'MODISTERIA PROFESIONAL',
                       style: pw.TextStyle(
                         fontSize: 20,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.blue800,
+                        color: PdfColors.pink800,
                       ),
                     ),
                     pw.SizedBox(height: 16),
@@ -44,7 +65,7 @@ class PDFService {
                       style: pw.TextStyle(
                         fontSize: 18,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.blue700,
+                        color: PdfColors.pink700,
                       ),
                     ),
                   ],
@@ -88,13 +109,13 @@ class PDFService {
 
               pw.SizedBox(height: 20),
 
-              // Tabla de ajustes
+              // Tabla de ajustes con tema rosa
               pw.Table(
                 border: pw.TableBorder.all(color: PdfColors.grey300),
                 children: [
                   // Encabezado
                   pw.TableRow(
-                    decoration: pw.BoxDecoration(color: PdfColors.grey100),
+                    decoration: pw.BoxDecoration(color: PdfColors.pink100),
                     children: [
                       pw.Padding(
                         padding: pw.EdgeInsets.all(8),
@@ -140,12 +161,12 @@ class PDFService {
 
               pw.SizedBox(height: 20),
 
-              // Totales
+              // Totales con tema rosa
               pw.Container(
                 padding: pw.EdgeInsets.all(16),
                 decoration: pw.BoxDecoration(
-                  color: PdfColors.blue50,
-                  border: pw.Border.all(color: PdfColors.blue200),
+                  color: PdfColors.pink50,
+                  border: pw.Border.all(color: PdfColors.pink200),
                 ),
                 child: pw.Column(
                   children: [
@@ -166,7 +187,7 @@ class PDFService {
                         ],
                       ),
                     ],
-                    pw.Divider(color: PdfColors.blue300),
+                    pw.Divider(color: PdfColors.pink300),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
@@ -242,19 +263,20 @@ class PDFService {
                 pw.SizedBox(height: 10),
               ],
 
-              // Términos y condiciones
+              // Términos y condiciones con tema rosa
               if (nota.incluirTerminos) ...[
                 pw.Container(
                   width: double.infinity,
                   padding: pw.EdgeInsets.all(16),
                   decoration: pw.BoxDecoration(
-                    color: PdfColors.yellow50,
-                    border: pw.Border.all(color: PdfColors.yellow300),
+                    color: PdfColors.pink50,
+                    border: pw.Border.all(color: PdfColors.pink300),
                   ),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('Términos y Condiciones:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      pw.Text('Términos y Condiciones:', 
+                               style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.pink800)),
                       pw.SizedBox(height: 8),
                       pw.Text(
                         '• El trabajo se entrega en un plazo de 3 a 5 días hábiles.\n'
@@ -324,7 +346,7 @@ class PDFService {
       await Share.shareXFiles(
         [XFile(file.path)],
         text: 'Nota de servicio: $facturaNo',
-        subject: 'Nota de Servicio - Sastrería Profesional',
+        subject: 'Nota de Servicio - Modisteria Profesional',
       );
     } catch (e) {
       print('Error al compartir con share_plus: $e');
@@ -332,9 +354,19 @@ class PDFService {
     }
   }
 
-  // Método alternativo que solo usa share_plus (más confiable)
+  // Método alternativo que solo usa share_plus (más confiable) con tema rosa
   static Future<void> generateAndSharePDFSimple(Nota nota) async {
     final pdf = pw.Document();
+
+    // Cargar el logo desde assets
+    pw.ImageProvider? logoImage;
+    try {
+      final ByteData logoData = await rootBundle.load('assets/images/logo.png');
+      final Uint8List logoBytes = logoData.buffer.asUint8List();
+      logoImage = pw.MemoryImage(logoBytes);
+    } catch (e) {
+      print('Error cargando logo: $e');
+    }
 
     pdf.addPage(
       pw.Page(
@@ -343,24 +375,33 @@ class PDFService {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              // Encabezado
+              // Encabezado con logo y tema rosa
               pw.Container(
                 width: double.infinity,
                 padding: pw.EdgeInsets.all(20),
                 decoration: pw.BoxDecoration(
-                  color: PdfColors.blue50,
-                  border: pw.Border.all(color: PdfColors.blue200),
+                  color: PdfColors.pink50,
+                  border: pw.Border.all(color: PdfColors.pink200),
                 ),
                 child: pw.Column(
                   children: [
-                    pw.Icon(pw.IconData(0xe0af), size: 48, color: PdfColors.blue700),
+                    // Logo o icono de respaldo
+                    if (logoImage != null)
+                      pw.Container(
+                        width: 80,
+                        height: 80,
+                        child: pw.Image(logoImage),
+                      )
+                    else
+                      pw.Icon(pw.IconData(0xe0af), size: 48, color: PdfColors.pink700),
+                    
                     pw.SizedBox(height: 8),
                     pw.Text(
-                      'SASTRERÍA PROFESIONAL',
+                      'MODISTERIA PROFESIONAL',
                       style: pw.TextStyle(
                         fontSize: 20,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.blue800,
+                        color: PdfColors.pink800,
                       ),
                     ),
                     pw.SizedBox(height: 16),
@@ -369,7 +410,7 @@ class PDFService {
                       style: pw.TextStyle(
                         fontSize: 18,
                         fontWeight: pw.FontWeight.bold,
-                        color: PdfColors.blue700,
+                        color: PdfColors.pink700,
                       ),
                     ),
                   ],
@@ -413,13 +454,13 @@ class PDFService {
 
               pw.SizedBox(height: 20),
 
-              // Tabla de ajustes
+              // Tabla de ajustes con tema rosa
               pw.Table(
                 border: pw.TableBorder.all(color: PdfColors.grey300),
                 children: [
                   // Encabezado
                   pw.TableRow(
-                    decoration: pw.BoxDecoration(color: PdfColors.grey100),
+                    decoration: pw.BoxDecoration(color: PdfColors.pink100),
                     children: [
                       pw.Padding(
                         padding: pw.EdgeInsets.all(8),
@@ -465,12 +506,12 @@ class PDFService {
 
               pw.SizedBox(height: 20),
 
-              // Totales
+              // Totales con tema rosa
               pw.Container(
                 padding: pw.EdgeInsets.all(16),
                 decoration: pw.BoxDecoration(
-                  color: PdfColors.blue50,
-                  border: pw.Border.all(color: PdfColors.blue200),
+                  color: PdfColors.pink50,
+                  border: pw.Border.all(color: PdfColors.pink200),
                 ),
                 child: pw.Column(
                   children: [
@@ -491,7 +532,7 @@ class PDFService {
                         ],
                       ),
                     ],
-                    pw.Divider(color: PdfColors.blue300),
+                    pw.Divider(color: PdfColors.pink300),
                     pw.Row(
                       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
@@ -567,19 +608,20 @@ class PDFService {
                 pw.SizedBox(height: 10),
               ],
 
-              // Términos y condiciones
+              // Términos y condiciones con tema rosa
               if (nota.incluirTerminos) ...[
                 pw.Container(
                   width: double.infinity,
                   padding: pw.EdgeInsets.all(16),
                   decoration: pw.BoxDecoration(
-                    color: PdfColors.yellow50,
-                    border: pw.Border.all(color: PdfColors.yellow300),
+                    color: PdfColors.pink50,
+                    border: pw.Border.all(color: PdfColors.pink300),
                   ),
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('Términos y Condiciones:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                      pw.Text('Términos y Condiciones:', 
+                               style: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.pink800)),
                       pw.SizedBox(height: 8),
                       pw.Text(
                         '• El trabajo se entrega en un plazo de 3 a 5 días hábiles.\n'
