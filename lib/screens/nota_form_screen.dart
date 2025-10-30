@@ -23,6 +23,7 @@ class _NotaFormScreenState extends State<NotaFormScreen> {
   DateTime selectedDate = DateTime.now();
   List<AjusteFormItem> ajustes = [];
   bool incluirTerminos = true;
+  String paymentStatus = 'pending';
   bool isLoading = false;
 
   @override
@@ -37,6 +38,7 @@ class _NotaFormScreenState extends State<NotaFormScreen> {
     if (widget.nota != null) {
       selectedDate = widget.nota!.fecha;
       incluirTerminos = widget.nota!.incluirTerminos;
+      paymentStatus = widget.nota!.paymentStatus;
       ajustes = widget.nota!.ajustes.map((a) => AjusteFormItem.fromAjuste(a)).toList();
     } else {
       ajustes.add(AjusteFormItem());
@@ -93,6 +95,7 @@ class _NotaFormScreenState extends State<NotaFormScreen> {
         direccion: direccionController.text,
         telefono: telefonoController.text,
         incluirTerminos: incluirTerminos,
+        paymentStatus: paymentStatus,
       );
 
       if (widget.nota == null) {
@@ -294,6 +297,18 @@ class _NotaFormScreenState extends State<NotaFormScreen> {
               value: incluirTerminos,
               onChanged: (value) => setState(() => incluirTerminos = value ?? false),
             ),
+            if (widget.nota != null) ...[
+              SizedBox(height: 16),
+              SwitchListTile(
+                title: Text('Marcar como Completada'),
+                value: paymentStatus == 'completed',
+                onChanged: (value) {
+                  setState(() {
+                    paymentStatus = value ? 'completed' : 'pending';
+                  });
+                },
+              ),
+            ],
             SizedBox(height: 32),
 
             // Botón guardar
