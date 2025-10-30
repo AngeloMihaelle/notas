@@ -21,7 +21,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 2, // Incrementamos la versión para activar la migración
+      version: 3, // Incrementamos la versión para activar la migración
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -41,7 +41,8 @@ class DatabaseService {
         observaciones TEXT,
         direccion TEXT,
         telefono TEXT,
-        incluir_terminos INTEGER NOT NULL
+        incluir_terminos INTEGER NOT NULL,
+        payment_status TEXT DEFAULT 'pending'
       )
     ''');
   }
@@ -51,6 +52,9 @@ class DatabaseService {
       // Migrar de version 1 a 2: cambiar impuestos -> a_cuenta, total -> saldo
       await db.execute('ALTER TABLE notas RENAME COLUMN impuestos TO a_cuenta');
       await db.execute('ALTER TABLE notas RENAME COLUMN total TO saldo');
+    }
+    if (oldVersion < 3) {
+      await db.execute("ALTER TABLE notas ADD COLUMN payment_status TEXT DEFAULT 'pending'");
     }
   }
 
@@ -117,6 +121,7 @@ class DatabaseService {
       'direccion': nota.direccion,
       'telefono': nota.telefono,
       'incluir_terminos': nota.incluirTerminos ? 1 : 0,
+      'payment_status': nota.paymentStatus,
     };
   }
 
@@ -137,6 +142,7 @@ class DatabaseService {
       direccion: map['direccion'] ?? '',
       telefono: map['telefono'] ?? '',
       incluirTerminos: (map['incluir_terminos'] ?? 0) == 1,
+      paymentStatus: map['payment_status'] ?? 'pending',
     );
   }
 }

@@ -44,6 +44,7 @@ class Nota {
   String direccion;
   String telefono;
   bool incluirTerminos;
+  String paymentStatus;
 
   Nota({
     this.id,
@@ -58,6 +59,7 @@ class Nota {
     required this.direccion,
     required this.telefono,
     required this.incluirTerminos,
+    required this.paymentStatus,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,6 +76,7 @@ class Nota {
       'direccion': direccion,
       'telefono': telefono,
       'incluir_terminos': incluirTerminos ? 1 : 0,
+      'payment_status': paymentStatus,
     };
   }
 
@@ -93,6 +96,7 @@ class Nota {
       direccion: map['direccion'] ?? '',
       telefono: map['telefono'] ?? '',
       incluirTerminos: (map['incluir_terminos'] ?? 0) == 1,
+      paymentStatus: map['payment_status'] ?? 'pending',
     );
   }
 
