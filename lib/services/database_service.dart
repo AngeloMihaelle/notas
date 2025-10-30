@@ -68,10 +68,15 @@ class DatabaseService {
     return await db.insert('notas', map);
   }
 
-  Future<List<Nota>> getAllNotas() async {
+  Future<List<Nota>> getAllNotas({String? paymentStatus}) async {
     final db = await database;
-    final maps = await db.query('notas', orderBy: 'fecha DESC');
-    
+    final maps = await db.query(
+      'notas',
+      orderBy: 'fecha DESC',
+      where: paymentStatus != null ? 'payment_status = ?' : null,
+      whereArgs: paymentStatus != null ? [paymentStatus] : null,
+    );
+
     return maps.map((map) {
       return _dbMapToNota(map);
     }).toList();
