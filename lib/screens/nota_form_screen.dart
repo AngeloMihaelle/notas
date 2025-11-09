@@ -82,6 +82,12 @@ class _NotaFormScreenState extends State<NotaFormScreen> {
       final facturaNo = widget.nota?.facturaNo ?? 
           await DatabaseService.instance.getNextFacturaNo();
       
+      final saldo = calculateSaldo();
+      String finalPaymentStatus = paymentStatus;
+      if (saldo <= 0) {
+        finalPaymentStatus = 'completed';
+      }
+
       final nota = Nota(
         id: widget.nota?.id,
         facturaNo: facturaNo,
@@ -90,12 +96,12 @@ class _NotaFormScreenState extends State<NotaFormScreen> {
         ajustes: ajustes.where((a) => a.isValid()).map((a) => a.toAjuste()).toList(),
         subtotal: calculateSubtotal(),
         aCuenta: double.tryParse(aCuentaController.text) ?? 0.0,
-        saldo: calculateSaldo(),
+        saldo: saldo,
         observaciones: observacionesController.text,
         direccion: direccionController.text,
         telefono: telefonoController.text,
         incluirTerminos: incluirTerminos,
-        paymentStatus: paymentStatus,
+        paymentStatus: finalPaymentStatus,
       );
 
       if (widget.nota == null) {
